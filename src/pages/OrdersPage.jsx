@@ -15,32 +15,6 @@ export function OrdersPage({ store, theme }) {
     return () => { cancelled = true; unsub?.() }
   }, [store])
 
-  const downloadPdf = async (orderId) => {
-    const [{ jsPDF }, items] = await Promise.all([
-      import('jspdf'),
-      store.getOrderItems(orderId),
-    ])
-    const order = await store.get('orders', orderId)
-    const doc = new jsPDF()
-    let y = 10
-    doc.setFontSize(14)
-    doc.text('FOOD TRUCK - RECEIPT', 10, y)
-    y += 8
-    doc.setFontSize(11)
-    doc.text(`Order ${order.id}`, 10, y)
-    y += 6
-    doc.text(new Date(order.createdAt).toLocaleString(), 10, y)
-    y += 8
-    doc.setFontSize(10)
-    items.forEach((it) => {
-      doc.text(`${it.qty} x ${it.name} - $ ${(it.price*it.qty/100).toFixed(2)}`, 10, y)
-      y += 6
-    })
-    y += 4
-    doc.text(`Subtotal: $ ${(order.subtotal/100).toFixed(2)}`, 10, y)
-    doc.save(`receipt_${order.id}.pdf`)
-  }
-
   return (
     <div className="mx-auto max-w-5xl p-4">
       <h2 className="mb-4 text-xl font-semibold">Recent Orders</h2>
@@ -60,9 +34,7 @@ export function OrdersPage({ store, theme }) {
                 <td className="px-3 py-2">{o.id}</td>
                 <td className="px-3 py-2">{o.status}</td>
                 <td className="px-3 py-2">$ {(o.subtotal/100).toFixed(2)}</td>
-                <td className="px-3 py-2">
-                  <button className={`rounded-md px-2 py-1 text-white ${light ? 'bg-sky-600 hover:bg-sky-700' : 'bg-indigo-600 hover:bg-indigo-700'}`} onClick={() => downloadPdf(o.id)}>Download PDF</button>
-                </td>
+                <td className="px-3 py-2"></td>
               </tr>
             ))}
             {orders.length === 0 && (
